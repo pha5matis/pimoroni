@@ -1,0 +1,11 @@
+[Unit]
+Description=Display-O-Tron
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /data/admin/scripts/startup/dtron.py
+ExecStop=/usr/bin/python /data/admin/scripts/startup/dtron-stop.py
+
+[Install]
+WantedBy=multi-user.target
