@@ -30,17 +30,21 @@ ButtonStatus = 'Off'
 @nav.on(nav.BUTTON)
 def handle_button(pin):
     global ButtonStatus
+    global loopcount
     if ButtonStatus == 'On':
 	backlight.off()
 	ButtonStatus = 'Off'
     else:
        backlight.rgb(229, 0,255)
        ButtonStatus = 'On'
+       loopcount = 0
 
 
 #The down joystick shuts the pi down
 @nav.on(nav.DOWN)
 def handle_down(pin):
+    global loopcount
+    loopcount=0
     lcd.clear()
     backlight.rgb(255, 0, 0)
     lcd.write("Shutting Down!")
@@ -61,6 +65,7 @@ def get_addr(ifname):
    except IOError:
       return 'Disconnected'
 
+loopcount = 0
 
 while True:
 	# Print Hostname Centred Uppercase
@@ -69,15 +74,18 @@ while True:
 	hostmidlen = (16 - len(host)) / 2
 	lcd.set_cursor_position(hostmidlen,0)
 	lcd.write(host)
+
 	# Get Interfaces and IP Addresses
 	# Finds wireless devices with wlx in the name as a list and returns the first item in that list
 	ifaces = psutil.net_if_addrs()
 	wlxinterface = filter(lambda x: 'wlx' in x,ifaces)
+
 	# If the list is returned without data set the wlxinterface to none this prevents an empty list
 	if not wlxinterface:
 	   wlxinterface = 'None'
 	else:
 	   wlxinterface = wlxinterface[0]
+
 	wlxinterface = get_addr(wlxinterface)
 
 	# Todo make this the same as above so it is dynamic
@@ -109,7 +117,17 @@ while True:
 	#Sets the bar LED lights to a percentage of cputemp to the thermal throttle 80 degrees
 	CpuTemp = getCPUtemperature()
 	backlight.set_bar(0, [155] * int(float(CpuTemp) / 80 * 10 ))
-	time.sleep(2)
+
+        # Puts the display to sleep after a minute the button press turns it on again
+        if loopcount == 60:
+           while loopcount >= 60:
+             lcd.clear()
+             backlight.off()
+             time.sleep(1)
+
+	loopcount = loopcount + 1
+	time.sleep(1)
+
 #	lcd.set_cursor_position(0,1)
 #	CPUUse = getCPUuse()
 #	CPUUse = CPUUse + (16 - len(CPUUse)) * ' '
