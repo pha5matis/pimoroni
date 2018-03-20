@@ -6,14 +6,17 @@ import struct
 import time
 import os
 import sys
-import dot3k.lcd as lcd
-import dot3k.backlight as backlight
-import dot3k.joystick as nav
+
+from dothat import lcd
+from dothat import backlight
+import dothat.touch as nav
+
 import psutil
 
 #Clears the LCD and sets contrast on Start
 lcd.clear()
 lcd.set_contrast(47)
+backlight.graph_off()
 
 #Function to get CPU Temp
 def getCPUtemperature():
@@ -28,21 +31,23 @@ def getCPUuse():
 #The Button press turns the backlight on and off.
 ButtonStatus = 'Off'
 @nav.on(nav.BUTTON)
-def handle_button(pin):
+def handle_button(ch, evt):
+#def handle_button(pin):
     global ButtonStatus
     global loopcount
     if ButtonStatus == 'On':
 	backlight.off()
 	ButtonStatus = 'Off'
     else:
-       backlight.rgb(229, 0,255)
+       backlight.rgb(229,255,0)
        ButtonStatus = 'On'
        loopcount = 0
 
 
 #The down joystick shuts the pi down
 @nav.on(nav.DOWN)
-def handle_down(pin):
+def handle_down(ch, evt):
+#def handle_down(pin):
     global loopcount
     loopcount=0
     lcd.clear()
@@ -113,10 +118,17 @@ while True:
 	   outputwlan = ('W:{}'.format(wlxinterface))
            outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
            lcd.write(outputwlan)
-
 	#Sets the bar LED lights to a percentage of cputemp to the thermal throttle 80 degrees
-	CpuTemp = getCPUtemperature()
-	backlight.set_bar(0, [155] * int(float(CpuTemp) / 80 * 10 ))
+	CPUTemp = getCPUtemperature()
+#	print CPUTemp
+	if float(CPUTemp) > 60.0:
+	   print CPUTemp
+	   backlight.graph_set_led_duty(0,1)
+	   backlight.graph_set_led_state(0,1)
+	else:
+	   backlight.graph_off()
+
+#	backlight.set_bar(0, [155] * int(float(CpuTemp) / 80 * 10 ))
 
         # Puts the display to sleep after a minute the button press turns it on again
         if loopcount == 60:
