@@ -11,20 +11,22 @@ import dot3k.backlight as backlight
 import dot3k.joystick as nav
 import psutil
 
-
+#Clears the LCD and sets contrast on Start
 lcd.clear()
 lcd.set_contrast(47)
 
+#Function to get CPU Temp
 def getCPUtemperature():
     res = os.popen('vcgencmd measure_temp').readline()
     return(res.replace("temp=","").replace("'C\n",""))
 
+#Function to get CPU Usage
 def getCPUuse():
     return(str(os.popen("top -n1 | awk '/Cpu\(s\):/ {print $2}'").readline().strip(\
 )))
 
+#The Button press turns the backlight on and off.
 ButtonStatus = 'Off'
-
 @nav.on(nav.BUTTON)
 def handle_button(pin):
     global ButtonStatus
@@ -38,6 +40,8 @@ def handle_button(pin):
        backlight.hue(0.18333333333333332)
        ButtonStatus = 'On'
 
+
+#The down joystick shuts the pi down
 @nav.on(nav.DOWN)
 def handle_down(pin):
     lcd.clear()
@@ -47,6 +51,8 @@ def handle_down(pin):
     os.system('systemctl poweroff') 
     sys.exit()
 
+
+#Function to get interface IP's
 def get_addr(ifname):
    try:
        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -67,7 +73,7 @@ while True:
 	lcd.set_cursor_position(hostmidlen,0)
 	lcd.write(host)
 	# Get Interfaces and IP Addresses
-	# Finds wireless devices with wlan0 in the name as a list and returns the first item in that list
+	# Finds wireless devices with wlx in the name as a list and returns the first item in that list
 	ifaces = psutil.net_if_addrs()
 	wlxinterface = filter(lambda x: 'wlx' in x,ifaces)
 	# If the list is returned without data set the wlxinterface to none this prevents an empty list
@@ -76,6 +82,7 @@ while True:
 	else:
 	   wlxinterface = wlxinterface[0]
 	wlxinterface = get_addr(wlxinterface)
+
 	# Todo make this the same as above so it is dynamic
 	enxb827eba4274e = get_addr('enxb827eba4274e')
 
