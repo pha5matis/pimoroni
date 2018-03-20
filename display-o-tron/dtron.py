@@ -31,13 +31,10 @@ ButtonStatus = 'Off'
 def handle_button(pin):
     global ButtonStatus
     if ButtonStatus == 'On':
-	backlight.use_rbg()
-        backlight.rgb(0, 0, 0)
+	backlight.off()
 	ButtonStatus = 'Off'
     else:
-       backlight.use_rbg()
        backlight.rgb(229, 0,255)
-       backlight.hue(0.18333333333333332)
        ButtonStatus = 'On'
 
 
@@ -50,7 +47,7 @@ def handle_down(pin):
     time.sleep(1)
     os.system('systemctl poweroff') 
     sys.exit()
-
+    time.sleep(2)
 
 #Function to get interface IP's
 def get_addr(ifname):
