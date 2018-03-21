@@ -132,17 +132,11 @@ def display_WNIC():
         outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
         lcd.write(outputwlan)
 
-#Initial Display
-#Display Hostname
-display_hostname()
-display_NIC()
-display_WNIC()
-
 while True:
 	display_hostname()
 	display_NIC()
 	display_WNIC()
-	
+
     #Sets the bar LED lights to a percentage of cputemp to the thermal throttle 80 degrees
 	CPUTemp = getCPUtemperature()
 #	print CPUTemp
