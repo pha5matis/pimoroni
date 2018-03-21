@@ -44,9 +44,9 @@ def handle_button(ch, evt):
 	ButtonStatus = 'Off'
     else:
        backlight.rgb(229,255,0)
-	   display_hostname(0)
-	   display_NIC(1)
-	   display_WNIC(2)
+       display_hostname(0)
+       display_NIC(1)
+       display_WNIC(2)
        ButtonStatus = 'On'
        loopcount = 0
 
