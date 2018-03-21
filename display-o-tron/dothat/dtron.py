@@ -44,9 +44,9 @@ def handle_button(ch, evt):
 	ButtonStatus = 'Off'
     else:
        backlight.rgb(229,255,0)
-	   display_hostname()
-	   display_NIC()
-	   display_WNIC()
+	   display_hostname(0)
+	   display_NIC(1)
+	   display_WNIC(2)
        ButtonStatus = 'On'
        loopcount = 0
 
@@ -82,9 +82,9 @@ def get_HostName():
 	return hostname
 
 #Print the hostname as a function on the first line centered.
-def display_hostname():
+def display_hostname(rowposition):
 	hostmidlen = (16 - len(get_HostName())) / 2
-	lcd.set_cursor_position(hostmidlen,0)
+	lcd.set_cursor_position(hostmidlen,rowposition)
 	lcd.write(get_HostName())
 
 #Gets the wireless Nic with wlx in the name as a list and returns the first item in that list
@@ -106,8 +106,8 @@ def get_NIC():
 		enxinterface = enxinterface[0]
 	return enxinterface
 
-def display_NIC():
-	lcd.set_cursor_position(0,1)
+def display_NIC(rowposition):
+	lcd.set_cursor_position(0,rowposition)
 	enxaddr = get_addr(get_NIC())
 	if enxaddr != 'Disconnected':
 		outputeth = ('E:' + enxaddr)
@@ -119,8 +119,8 @@ def display_NIC():
     	outputeth = outputeth + (16 - len(outputeth)) * ' '
 	    lcd.write(outputeth)
 
-def display_WNIC():
-	lcd.set_cursor_position(0,2)
+def display_WNIC(rowposition):
+	lcd.set_cursor_position(0,rowposition)
 	wlxaddr = get_addr(get_WNIC())
 	if wlxaddr != 'Disconnected':
 		outputwlan = ('W:'+ wlxaddr)
@@ -133,9 +133,9 @@ def display_WNIC():
         lcd.write(outputwlan)
 
 while True:
-	display_hostname()
-	display_NIC()
-	display_WNIC()
+	display_hostname(0)
+	display_NIC(1)
+	display_WNIC(2)
 
     #Sets the bar LED lights to a percentage of cputemp to the thermal throttle 80 degrees
 	CPUTemp = getCPUtemperature()
