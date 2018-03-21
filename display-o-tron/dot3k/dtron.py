@@ -35,9 +35,9 @@ def handle_button(pin):
 	backlight.off()
 	ButtonStatus = 'Off'
     else:
+       loopcount = 0
        backlight.rgb(229, 0,255)
        ButtonStatus = 'On'
-       loopcount = 0
 
 
 #The down joystick shuts the pi down
