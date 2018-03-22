@@ -40,15 +40,18 @@ def handle_button(ch, evt):
     global ButtonStatus
     global loopcount
     if ButtonStatus == 'On':
+        loopcount = 10
+        lcd.clear()
 	backlight.off()
 	ButtonStatus = 'Off'
     else:
+       loopcount = 0
        backlight.rgb(229,255,0)
        display_hostname(0)
        display_NIC(1)
        display_WNIC(2)
        ButtonStatus = 'On'
-       loopcount = 0
+#       loopcount = 0
 
 #The down joystick shuts the pi down
 @nav.on(nav.DOWN)
@@ -110,27 +113,27 @@ def display_NIC(rowposition):
 	lcd.set_cursor_position(0,rowposition)
 	enxaddr = get_addr(get_NIC())
 	if enxaddr != 'Disconnected':
-		outputeth = ('E:' + enxaddr)
+	    outputeth = ('E:' + enxaddr)
 	    #Take the output of outputeth and get the length less 16chars on display and add the difference as white spaces
 	    outputeth = outputeth + (16 - len(outputeth)) * ' '
 	    lcd.write(outputeth)
 	else:
 	    outputeth = ('E:{}'.format(enxaddr))
-    	outputeth = outputeth + (16 - len(outputeth)) * ' '
+    	    outputeth = outputeth + (16 - len(outputeth)) * ' '
 	    lcd.write(outputeth)
 
 def display_WNIC(rowposition):
 	lcd.set_cursor_position(0,rowposition)
 	wlxaddr = get_addr(get_WNIC())
 	if wlxaddr != 'Disconnected':
-		outputwlan = ('W:'+ wlxaddr)
+	    outputwlan = ('W:'+ wlxaddr)
 	    #Take the output of outputwlan and get the length less 16chars on display and add the difference as white spaces
-		outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
+	    outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
 	    lcd.write(outputwlan)
 	else:
-		outputwlan = ('W:{}'.format(wlxaddr))
-        outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
-        lcd.write(outputwlan)
+	    outputwlan = ('W:{}'.format(wlxaddr))
+            outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
+            lcd.write(outputwlan)
 
 while True:
 	display_hostname(0)
@@ -150,8 +153,8 @@ while True:
 #	backlight.set_bar(0, [155] * int(float(CpuTemp) / 80 * 10 ))
 
         # Puts the display to sleep after a minute the button press turns it on again
-        if loopcount == 60:
-           while loopcount >= 60:
+        if loopcount == 10:
+           while loopcount >= 10:
              lcd.clear()
              backlight.off()
              time.sleep(1)
