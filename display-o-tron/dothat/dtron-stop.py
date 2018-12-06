@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import dot3k.lcd as lcd
-import dot3k.backlight as backlight
+from dothat import lcd
+from dothat import backlight
 
+backlight.graph_off()
 backlight.use_rbg()
 backlight.off()
 lcd.clear()

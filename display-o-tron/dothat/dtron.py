@@ -12,8 +12,6 @@ from dothat import lcd
 from dothat import backlight
 import dothat.touch as nav
 
-
-
 #Clears the LCD and sets contrast on Start
 lcd.clear()
 lcd.set_contrast(47)
@@ -44,13 +42,16 @@ def handle_button(ch, evt):
         lcd.clear()
 	backlight.off()
 	ButtonStatus = 'Off'
+	print "Display Off"
     else:
        loopcount = 0
        backlight.rgb(229,255,0)
        display_hostname(0)
        display_NIC(1)
        display_WNIC(2)
+       graph_CPUTemp(5)
        ButtonStatus = 'On'
+       print "Display Off"
 #       loopcount = 0
 
 #The down joystick shuts the pi down
@@ -62,10 +63,10 @@ def handle_down(ch, evt):
     lcd.clear()
     backlight.rgb(255, 0, 0)
     lcd.write("Shutting Down!")
-    time.sleep(1)
+    #time.sleep(1)
     os.system('systemctl poweroff') 
-    sys.exit()
-    time.sleep(2)
+    #sys.exit()
+    #time.sleep(2)
 
 #Function to get interface IP's
 def get_addr(ifname):
@@ -89,6 +90,7 @@ def display_hostname(rowposition):
 	hostmidlen = (16 - len(get_HostName())) / 2
 	lcd.set_cursor_position(hostmidlen,rowposition)
 	lcd.write(get_HostName())
+        #print (get_HostName())
 
 #Gets the wireless Nic with wlx in the name as a list and returns the first item in that list
 def get_WNIC():
@@ -117,10 +119,12 @@ def display_NIC(rowposition):
 	    #Take the output of outputeth and get the length less 16chars on display and add the difference as white spaces
 	    outputeth = outputeth + (16 - len(outputeth)) * ' '
 	    lcd.write(outputeth)
+	    #print outputeth
 	else:
 	    outputeth = ('E:{}'.format(enxaddr))
     	    outputeth = outputeth + (16 - len(outputeth)) * ' '
 	    lcd.write(outputeth)
+	    #print outputeth
 
 def display_WNIC(rowposition):
 	lcd.set_cursor_position(0,rowposition)
@@ -130,41 +134,40 @@ def display_WNIC(rowposition):
 	    #Take the output of outputwlan and get the length less 16chars on display and add the difference as white spaces
 	    outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
 	    lcd.write(outputwlan)
+	    #print outputwlan
 	else:
 	    outputwlan = ('W:{}'.format(wlxaddr))
             outputwlan = outputwlan + (16 - len(outputwlan)) * ' '
             lcd.write(outputwlan)
+            #print outputwlan
+
+def graph_CPUTemp(lednumber):
+        CPUTemp = getCPUtemperature()
+        if float(CPUTemp) > 60.0:
+           #print CPUTemp
+           backlight.graph_set_led_duty(0,1)
+           backlight.graph_set_led_state(lednumber,1)
+        else:
+           backlight.graph_set_led_state(lednumber,0)
 
 while True:
-	display_hostname(0)
-	display_NIC(1)
-	display_WNIC(2)
 
-    #Sets the bar LED lights to a percentage of cputemp to the thermal throttle 80 degrees
-	CPUTemp = getCPUtemperature()
-#	print CPUTemp
-	if float(CPUTemp) > 60.0:
-	   print CPUTemp
-	   backlight.graph_set_led_duty(0,1)
-	   backlight.graph_set_led_state(0,1)
-	else:
-	   backlight.graph_off()
-
-#	backlight.set_bar(0, [155] * int(float(CpuTemp) / 80 * 10 ))
-
-        # Puts the display to sleep after a minute the button press turns it on again
+        # Puts the display to sleep after a x time the button press turns it on again
         if loopcount == 10:
-           while loopcount >= 10:
-             lcd.clear()
-             backlight.off()
-             time.sleep(1)
+	  lcd.clear()
+	  backlight.off()
+          while loopcount >= 10:
+             #lcd.clear()
+             #backlight.off()
+	    graph_CPUTemp(5)
+            time.sleep(1)
+	else:
+           display_hostname(0)
+           display_NIC(1)
+           display_WNIC(2)
+	   graph_CPUTemp(5)
 
+        if loopcount == 5:
+             backlight.off()
 	loopcount = loopcount + 1
 	time.sleep(1)
-
-#	lcd.set_cursor_position(0,1)
-#	CPUUse = getCPUuse()
-#	CPUUse = CPUUse + (16 - len(CPUUse)) * ' '
-#	lcd.write(CPUUse)
-#	print(psutil.cpu_percent())
-#	time.sleep(2)
